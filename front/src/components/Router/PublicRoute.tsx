@@ -12,7 +12,7 @@ const PublicRoute: React.FunctionComponent<Props> = ({
   ...rest
 }) => {
   if (isAuthenticated) {
-    return <Redirect from="" to="/" noThrow />
+    return <Redirect from="" to="/places" noThrow />
   }
 
   return <PageComponent {...rest} />;

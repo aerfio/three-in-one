@@ -1,5 +1,6 @@
 import { Service } from "./types";
 
+import { NotificationService } from "./Notification";
 import { HttpClient } from "./HttpClient";
 
 import { configureAuthService } from "./Auth";
@@ -10,11 +11,17 @@ const configureServices = async ({
 }: {
   apiBasePath: string
 }): Promise<{ [key: string]: Service }> => {
+  const notificationSvc = new NotificationService();
   const httpClient = new HttpClient(apiBasePath);
   const authSvc = configureAuthService({ httpClient });
   const placesSvc = configurePlacesService({ httpClient, authSvc });
 
-  return { httpClient, authSvc, placesSvc };
+  return { 
+    notificationSvc,
+    httpClient, 
+    authSvc, 
+    placesSvc 
+  };
 };
 
 export default configureServices;

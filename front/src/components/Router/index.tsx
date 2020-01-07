@@ -6,8 +6,8 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import Login from "../Login";
 import Signup from "../Signup";
-import PlacesList from "../PlacesList";
-import Place from "../Place";
+import Places from "../Places";
+import PlaceCreator from "../PlaceCreator";
 import NotFound from "../NotFound";
 
 const Router: React.FunctionComponent = () => {
@@ -16,9 +16,8 @@ const Router: React.FunctionComponent = () => {
       <PublicRoute path="/login" pageComponent={Login} />
       <PublicRoute path="/signup" pageComponent={Signup} />
 
-      <ProtectedRoute path="/" pageComponent={PlacesList} />
-      <ProtectedRoute path="/places" pageComponent={PlacesList} />
-      <ProtectedRoute path="/places/:id" pageComponent={Place} />
+      <ProtectedRoute path="/places" pageComponent={Places} />
+      <ProtectedRoute path="/places/create" pageComponent={PlaceCreator} />
 
       <PublicRoute default pageComponent={NotFound} />
     </ReachRouter>

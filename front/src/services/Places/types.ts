@@ -1,7 +1,7 @@
 export const PLACES_STORAGE = "PLACES_STORAGE_KEY"
 
 export interface Place {
-  id: number;
+  id: string;
   location: {
     lat: number;
     lng: number;

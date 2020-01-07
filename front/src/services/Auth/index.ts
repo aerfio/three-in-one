@@ -17,12 +17,12 @@ export class AuthService extends Service {
   }
 
   async login(dto: LoginDTO): Promise<string> {
-    const { token } = await this._httpClient.post<any, { token: string }>(`login`, dto);
+    const { token } = await this._httpClient.post<any, { token: string }>(`/login`, dto);
     return token;
   };
   
   async register(dto: RegistrationDTO) {
-    await this._httpClient.post(`registration`, dto);
+    await this._httpClient.post(`/registration`, dto);
   }
 
   logout() {

@@ -1,4 +1,4 @@
-import { Reducer, Dispatch } from "redux";
+import { Reducer } from "redux";
 import { ActionsService } from './actionsService';
 
 export interface Services {

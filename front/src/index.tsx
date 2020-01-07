@@ -7,6 +7,7 @@ import configureStore from "./store";
 import context from './context';
 
 import "./index.css"
+import 'react-toastify/dist/ReactToastify.css';
 
 const render = async (store: ReturnType<typeof configureStore>) => {
   const Root = (await import('./components/Root')).default

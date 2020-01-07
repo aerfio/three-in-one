@@ -17,32 +17,73 @@ export class PlacesService extends Service {
     private readonly _localStorageSvc: LocalStorageService<Place>,
   ) {
     super()
+
+    this._localStorageSvc.setList([
+      {
+        id: "1",
+        name: "Dupa 1",
+        location: {
+          lat: 50.298,
+          lng: 18.6965,
+        },
+        description: "Tutaj byłem",
+        visitedDate: "12.06.1897",
+      },
+      {
+        id: "2",
+        name: "Dupa 2",
+        location: {
+          lat: 49.298,
+          lng: 19.6965,
+        },
+        description: "Tutaj byłem",
+        visitedDate: "12.06.1897",
+      },
+      {
+        id: "3",
+        name: "Dupa 3",
+        location: {
+          lat: 51.298,
+          lng: 17.6965,
+        },
+        description: "Tutaj byłem",
+        visitedDate: "12.06.1897",
+      }
+    ])
   }
 
   async fetchPlaces(): Promise<Place[]> {
+    // await this._httpClient.get(`/places`);
+
     return this._localStorageSvc.getList();
   };
   
   async createPlace(dto: CreatePlaceDTO) {
-    // await this._httpClient.post(url, dto);
+    // await this._httpClient.post(`/places`, dto);
+
+    this._localStorageSvc.append([dto]);
   }
 
-  async removePlace(id: number) {
-    // await this._httpClient.post(url, dto);
+  async removePlace(id: string) {
+    // await this._httpClient.delete(`/places/${id}`);
+
+    this.removeById(id);
   }
 
   async editPlace(dto: EditPlaceDTO) {
-    // await this._httpClient.post(url, dto);
+    // await this._httpClient.put(`/places/${dto.id}`, dto);
+
+    this.removeById(dto.id);
+    this._localStorageSvc.append([dto]);
   }
 
-  private removeById(id: number, key?: string)  {
+  private removeById(id: string, key?: string)  {
     const nextList = this._localStorageSvc.getList(key).filter(u => u.id !== id);
     this._localStorageSvc.setList(nextList, key);
   };
 
-  private getById(id: number, key?: string) {
-    const unit = this._localStorageSvc.getList(key).find(u => u.id === id);
-    return unit || null;
+  private getById(id: string, key?: string)  {
+    return this._localStorageSvc.getList(key).find(u => u.id === id);
   };
 }
 

@@ -1,6 +1,8 @@
-import { Types, Action } from "../types";
+import { Action } from "../types";
 
 import { AuthService } from "../../services/Auth"
+
+import { types } from "./actions";
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -9,18 +11,17 @@ export interface AuthState {
 }
 
 const initReducer = (
-  types: Types, 
   services: {
     authSvc: AuthService,
   }
 ) => {
   const INITIAL_STATE: AuthState = {
-    isAuthenticated: true,// services.authSvc.isAuthenticated(),
+    isAuthenticated: true, //services.authSvc.isAuthenticated(),
     isAuthenticating: false,
     error: null,
   };
 
-  return (state: AuthState = INITIAL_STATE, action: Action) => {
+  return (state: AuthState = INITIAL_STATE, action: Action): AuthState => {
     const { type, payload } = action;
 
     switch (type) {

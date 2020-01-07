@@ -3,20 +3,21 @@ import { DiscoverActionsService } from './service';
 import { types, createActions } from './actions';
 
 import { PlacesService } from "../../services/Places";
+import { NotificationService } from "../../services/Notification";
 
 interface Services {
   placesSvc: PlacesService,
+  notificationSvc: NotificationService,
 }
 
 const configureDiscoverModule = (services: Services) => {
   const actions = new DiscoverActionsService(
     createActions(),
-    services.placesSvc
+    services.placesSvc,
+    services.notificationSvc,
   );
 
-  const reducer = initReducer(types, {
-    placesSvc: services.placesSvc,
-  });
+  const reducer = initReducer();
 
   return { actions, reducer, types };
 };
