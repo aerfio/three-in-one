@@ -34,7 +34,7 @@ export function createActions() {
   const createPlaceFailure = actionCreator<Error>(types.CREATE_PLACE_FAILURE);
 
   const removePlaceAttempt = actionCreator(types.REMOVE_PLACE_ATTEMPT);
-  const removePlaceSuccess = actionCreator<string>(types.REMOVE_PLACE_SUCCESS);
+  const removePlaceSuccess = actionCreator<number>(types.REMOVE_PLACE_SUCCESS);
   const removePlaceFailure = actionCreator<Error>(types.REMOVE_PLACE_FAILURE);
 
   const editPlaceAttempt = actionCreator(types.EDIT_PLACE_ATTEMPT);

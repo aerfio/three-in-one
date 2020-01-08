@@ -1,104 +1,83 @@
 import { Service } from "../types";
 import { 
-  PLACES_STORAGE,
   Place,
+  DeserializedPlace,
   CreatePlaceDTO,
   EditPlaceDTO,
 } from "./types";
 
-import { AuthService } from "../Auth";
-import { HttpClient } from "../HttpClient";
-import { LocalStorageService } from "../LocalStorage";
+import { GraphQLClient } from "../GraphQL";
+
+import {
+  ADD_PLACE_MUTATION,
+  ADD_PLACE_MUTATION_VARIABLES,
+  DELETE_PLACE_MUTATION,
+  DELETE_PLACE_MUTATION_VARIABLES,
+} from "./mutations";
+import {
+  PLACES_QUERY,
+} from "./queries";
 
 export class PlacesService extends Service {
   constructor(
-    private readonly _authSvc: AuthService,
-    private readonly _httpClient: HttpClient,
-    private readonly _localStorageSvc: LocalStorageService<Place>,
+    private readonly _gqlClient: GraphQLClient,
   ) {
     super()
-
-    this._localStorageSvc.setList([
-      {
-        id: "1",
-        name: "Dupa 1",
-        location: {
-          lat: 50.298,
-          lng: 18.6965,
-        },
-        description: "Tutaj byłem",
-        visitedDate: "12.06.1897",
-      },
-      {
-        id: "2",
-        name: "Dupa 2",
-        location: {
-          lat: 49.298,
-          lng: 19.6965,
-        },
-        description: "Tutaj byłem",
-        visitedDate: "12.06.1897",
-      },
-      {
-        id: "3",
-        name: "Dupa 3",
-        location: {
-          lat: 51.298,
-          lng: 17.6965,
-        },
-        description: "Tutaj byłem",
-        visitedDate: "12.06.1897",
-      }
-    ])
   }
 
   async fetchPlaces(): Promise<Place[]> {
-    // await this._httpClient.get(`/places`);
-
-    return this._localStorageSvc.getList();
+    const response = await this._gqlClient.query<{ places: DeserializedPlace[] }>(
+      PLACES_QUERY,
+    );
+    return this._serializePlaces(response.data.places);
   };
   
   async createPlace(dto: CreatePlaceDTO) {
-    // await this._httpClient.post(`/places`, dto);
-
-    this._localStorageSvc.append([dto]);
+    const response = await this._gqlClient.mutation<{ user: { id: string } }, ADD_PLACE_MUTATION_VARIABLES>(
+      ADD_PLACE_MUTATION,
+      {
+        lat: dto.location.lat,
+        lng: dto.location.lng,
+        name: dto.name,
+        description: dto.description,
+        visitedDate: dto.visitedDate,
+        placeId: dto.name,
+      }
+    );
+    return response.data.user.id;
   }
 
-  async removePlace(id: string) {
-    // await this._httpClient.delete(`/places/${id}`);
-
-    this.removeById(id);
+  async removePlace(id: number): Promise<boolean> {
+    const response = await this._gqlClient.mutation<{ ok: boolean }, DELETE_PLACE_MUTATION_VARIABLES>(
+      DELETE_PLACE_MUTATION,
+      {
+        id
+      }
+    );
+    return response.data.ok;
   }
 
   async editPlace(dto: EditPlaceDTO) {
     // await this._httpClient.put(`/places/${dto.id}`, dto);
-
-    this.removeById(dto.id);
-    this._localStorageSvc.append([dto]);
   }
 
-  private removeById(id: string, key?: string)  {
-    const nextList = this._localStorageSvc.getList(key).filter(u => u.id !== id);
-    this._localStorageSvc.setList(nextList, key);
-  };
-
-  private getById(id: string, key?: string)  {
-    return this._localStorageSvc.getList(key).find(u => u.id === id);
-  };
+  private _serializePlaces(places: DeserializedPlace[]): Place[] {
+    return places.map(place => ({
+      ...place,
+      location: {
+        lat: place.lat,
+        lng: place.lng,
+      }
+    } as Place))
+  }
 }
 
 export const configurePlacesService = ({
-  authSvc,
-  httpClient,
+  gqlClient,
 }: {
-  authSvc: AuthService,
-  httpClient: HttpClient,
+  gqlClient: GraphQLClient,
 }): PlacesService => {
-  const sessionStorageSvc = new LocalStorageService<Place>({ key: PLACES_STORAGE });
-
   return new PlacesService(
-    authSvc,
-    httpClient, 
-    sessionStorageSvc
+    gqlClient, 
   );
 };

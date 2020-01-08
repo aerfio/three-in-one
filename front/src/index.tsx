@@ -18,7 +18,7 @@ const render = async (store: ReturnType<typeof configureStore>) => {
 
 async function init() {
   const services = await configureServices({
-    apiBasePath: "",
+    apiBasePath: "http://localhost:8000",
   });
   const { actions, reducers } = await configureModules(services); 
 

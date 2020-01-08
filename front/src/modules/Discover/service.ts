@@ -46,7 +46,7 @@ export class DiscoverActionsService extends ActionsService {
     }
   };
 
-  removePlace = (id: string) => async (dispatch: Dispatch) => {
+  removePlace = (id: number) => async (dispatch: Dispatch) => {
     dispatch(this._actions.removePlaceAttempt());
 
     try {

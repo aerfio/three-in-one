@@ -1,28 +1,47 @@
 import { Service } from "../types";
 import { 
-  AUTH_SESSION_STORAGE_TOKEN,
   LoginDTO, 
   RegistrationDTO
 } from "./types";
 
-import { HttpClient } from "../HttpClient";
+import { GraphQLClient } from "../GraphQL";
 import { SessionStorageService } from "../SessionStorage";
+
+import {
+  REGISTRATION_MUTATION,
+  REGISTRATION_MUTATION_VARIABLES,
+  LOGIN_MUTATION,
+  LOGIN_MUTATION_VARIABLES,
+} from "./mutations";
 
 export class AuthService extends Service {
   constructor(
-    private readonly _httpClient: HttpClient,
+    private readonly _gqlClient: GraphQLClient,
     private readonly _sessionStorageSvc: SessionStorageService,
   ) {
     super()
   }
 
   async login(dto: LoginDTO): Promise<string> {
-    const { token } = await this._httpClient.post<any, { token: string }>(`/login`, dto);
-    return token;
+    const response = await this._gqlClient.mutation<{ token: string }, LOGIN_MUTATION_VARIABLES>(
+      LOGIN_MUTATION,
+      {
+        username: dto.email,
+        password: dto.password,
+      }
+    );
+    return response.data.token;
   };
   
   async register(dto: RegistrationDTO) {
-    await this._httpClient.post(`/registration`, dto);
+    const response = await this._gqlClient.mutation<{ user: { id: string } }, REGISTRATION_MUTATION_VARIABLES>(
+      REGISTRATION_MUTATION,
+      {
+        username: dto.email,
+        password: dto.password,
+      }
+    );
+    return response.data.user.id;
   }
 
   logout() {
@@ -43,14 +62,14 @@ export class AuthService extends Service {
 }
 
 export const configureAuthService = ({
-  httpClient,
+  gqlClient,
+  sessionStorageSvc,
 }: {
-  httpClient: HttpClient,
+  gqlClient: GraphQLClient,
+  sessionStorageSvc: SessionStorageService
 }): AuthService => {
-  const sessionStorageSvc = new SessionStorageService({ key: AUTH_SESSION_STORAGE_TOKEN });
-
   return new AuthService(
-    httpClient, 
+    gqlClient, 
     sessionStorageSvc
   );
 };

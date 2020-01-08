@@ -16,7 +16,7 @@ const initReducer = (
   }
 ) => {
   const INITIAL_STATE: AuthState = {
-    isAuthenticated: true, //services.authSvc.isAuthenticated(),
+    isAuthenticated: services.authSvc.isAuthenticated(),
     isAuthenticating: false,
     error: null,
   };
