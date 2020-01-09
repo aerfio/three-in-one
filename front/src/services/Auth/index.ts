@@ -1,3 +1,4 @@
+import jwtDecode from 'jwt-decode';
 import { Service } from "../types";
 import { 
   LoginDTO, 
@@ -12,6 +13,7 @@ import {
   REGISTRATION_MUTATION_VARIABLES,
   LOGIN_MUTATION,
   LOGIN_MUTATION_VARIABLES,
+  LOGIN_MUTATION_RESPONSE,
 } from "./mutations";
 
 export class AuthService extends Service {
@@ -23,32 +25,31 @@ export class AuthService extends Service {
   }
 
   async login(dto: LoginDTO): Promise<string> {
-    const response = await this._gqlClient.mutation<{ token: string }, LOGIN_MUTATION_VARIABLES>(
+    const response = await this._gqlClient.do<LOGIN_MUTATION_RESPONSE, LOGIN_MUTATION_VARIABLES>(
       LOGIN_MUTATION,
       {
         username: dto.email,
         password: dto.password,
       }
     );
-    return response.data.token;
+    return response.data.tokenAuth.token;
   };
   
   async register(dto: RegistrationDTO) {
-    const response = await this._gqlClient.mutation<{ user: { id: string } }, REGISTRATION_MUTATION_VARIABLES>(
+    await this._gqlClient.do<{ user: { id: string } }, REGISTRATION_MUTATION_VARIABLES>(
       REGISTRATION_MUTATION,
       {
         username: dto.email,
         password: dto.password,
       }
     );
-    return response.data.user.id;
   }
 
   logout() {
     this._sessionStorageSvc.clearKey();
   }
 
-  getToken = () => {
+  getToken = (): string | null => {
     return this._sessionStorageSvc.getKey();
   };
 
@@ -56,8 +57,19 @@ export class AuthService extends Service {
     return this._sessionStorageSvc.setKey(token);
   };
 
-  isAuthenticated = () => {
-    return !!this.getToken();
+  isAuthenticated = (): boolean => {
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+    
+    let data: { username: string } | undefined = undefined
+    try {
+      data = jwtDecode(token);
+    } catch(e) {
+      return false;
+    }
+    return !!(data && data.username);
   };
 }
 

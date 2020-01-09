@@ -27,6 +27,12 @@ export const LOGIN_MUTATION = `
   }
 `
 
+export interface LOGIN_MUTATION_RESPONSE {
+  tokenAuth: {
+    token: string,
+  }
+}
+
 export interface LOGIN_MUTATION_VARIABLES {
   password: string,
   username: string,

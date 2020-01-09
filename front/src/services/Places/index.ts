@@ -26,14 +26,14 @@ export class PlacesService extends Service {
   }
 
   async fetchPlaces(): Promise<Place[]> {
-    const response = await this._gqlClient.query<{ places: DeserializedPlace[] }>(
+    const response = await this._gqlClient.do<{ places: DeserializedPlace[] }>(
       PLACES_QUERY,
     );
     return this._serializePlaces(response.data.places);
   };
   
   async createPlace(dto: CreatePlaceDTO) {
-    const response = await this._gqlClient.mutation<{ user: { id: string } }, ADD_PLACE_MUTATION_VARIABLES>(
+    await this._gqlClient.do<{ user: { id: string } }, ADD_PLACE_MUTATION_VARIABLES>(
       ADD_PLACE_MUTATION,
       {
         lat: dto.location.lat,
@@ -44,17 +44,15 @@ export class PlacesService extends Service {
         placeId: dto.name,
       }
     );
-    return response.data.user.id;
   }
 
-  async removePlace(id: number): Promise<boolean> {
-    const response = await this._gqlClient.mutation<{ ok: boolean }, DELETE_PLACE_MUTATION_VARIABLES>(
+  async removePlace(id: number) {
+    await this._gqlClient.do<{ ok: boolean }, DELETE_PLACE_MUTATION_VARIABLES>(
       DELETE_PLACE_MUTATION,
       {
         id
       }
     );
-    return response.data.ok;
   }
 
   async editPlace(dto: EditPlaceDTO) {

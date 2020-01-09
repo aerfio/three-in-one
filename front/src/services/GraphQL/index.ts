@@ -1,9 +1,10 @@
-
-import { AxiosResponse } from 'axios';
+import jwtDecode from 'jwt-decode';
 import { Service } from "../types";
 
 import { HttpClient } from "../HttpClient";
 import { SessionStorageService } from "../SessionStorage";
+
+import { GQLResponse } from "../../common";
 
 export class GraphQLClient extends Service {
   constructor(
@@ -13,33 +14,48 @@ export class GraphQLClient extends Service {
     super();
   }
 
-  async query<T = any>(query: string, variables?: any): Promise<AxiosResponse<T>> {
+  async do<T = any, V = any>(query: string, variables?: V): Promise<GQLResponse<T>> {
     const headers = this._prepateHeaders();
 
-    return this._httpClient.post<T>(
-      `graphql`,
+    const response = await  this._httpClient.post<GQLResponse<T>>(
+      `/graphql/`,
       JSON.stringify({ query, variables }),
       { headers },
     );
-  }
 
-  async mutation<T = any, V = any>(query: string, variables?: V): Promise<AxiosResponse<T>> {
-    const headers = this._prepateHeaders();
+    const data = response.data;
 
-    return this._httpClient.post<T>(
-      `graphql`,
-      JSON.stringify({ query, variables }),
-      { headers },
-    );
+    if (data.errors && data.errors.length) {
+      const errMessage: string = data.errors.map(err => err.message).join(",")
+      throw new Error(errMessage)
+    }
+
+    return response.data;
   }
 
   private _prepateHeaders() {
-    const headers: { [header: string]: string } = { 'Content-Type': 'application/json' };
-    if (!!this._sessionStorageSvc.getKey()) {
+    const headers: { [header: string]: string } = { 
+      'Content-Type': 'application/json'
+    };
+
+    if (this._isAuthenticated()) {
       headers["Authorization"] = `JWT ${this._sessionStorageSvc.getKey()}`
     }
     return headers;
   }
+
+  private _isAuthenticated(): boolean {
+    const token = this._sessionStorageSvc.getKey();
+    if (!token) {
+      return false;
+    }
+    
+    let data: { username: string } | undefined = undefined
+    try {
+      data = jwtDecode(token);
+    } catch(e) {
+      return false;
+    }
+    return !!(data && data.username);
+  };
 }
-
-

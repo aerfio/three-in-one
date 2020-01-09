@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = ConnectedProps<typeof connector>
 
 const Places: React.FunctionComponent<Props> = ({
+  places,
   fetchPlaces,
 }) => {
   const classes = useStyles();
@@ -29,6 +30,18 @@ const Places: React.FunctionComponent<Props> = ({
   useEffect(() => {
     fetchPlaces()
   }, [fetchPlaces])
+
+  if (!places || !places.length) {
+    return (
+      <Wrapper>
+        <Grid container className={classes.root} spacing={2}> 
+          <Grid item xs={12}>
+            Nie ma żadnych stworzonych miejsc
+          </Grid>
+        </Grid>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>
@@ -44,12 +57,16 @@ const Places: React.FunctionComponent<Props> = ({
   );
 }
 
+const mapState = (state: any) => ({
+  places: state.discover.places,
+})
+
 const mapDispatch = ({
   fetchPlaces: actions.discover.fetchPlaces,
 })
 
 const connector = connect(
-  undefined,
+  mapState,
   mapDispatch,
 )
 export default connector(Places);
