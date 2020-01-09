@@ -14,31 +14,33 @@ export class AuthActionsService extends ActionsService {
     private readonly _notificationSvc: NotificationService,
   ) {
     super()
+    _authSvc.isAuthenticated();
   }
 
   login = (dto: LoginDTO) => async (dispatch: Dispatch) => {
     dispatch(this._actions.loginAttempt());
 
     try {
-      await this._authSvc.login(dto);
+      const token = await this._authSvc.login(dto);
+      this._authSvc.setToken(token);
       dispatch(this._actions.loginSuccess());
       this._notificationSvc.success("Pomyślnie zalogowano");
     } catch (err) {
       dispatch(this._actions.loginFailure(err));
-      this._notificationSvc.error("Nie udało się zalogować");
+      this._notificationSvc.error(`Nie udało się zalogować: ${err}`);
     }
   };
 
   register = (dto: RegistrationDTO) => async (dispatch: Dispatch) => {
-    dispatch(this._actions.loginAttempt());
+    dispatch(this._actions.registrationAttempt());
 
     try {
       await this._authSvc.register(dto);
-      dispatch(this._actions.loginSuccess());
+      dispatch(this._actions.registrationSuccess());
       this._notificationSvc.success("Pomyślnie zarejestrowano");
     } catch (err) {
-      dispatch(this._actions.loginFailure(err));
-      this._notificationSvc.error("Nie udało się zarejestrować");
+      dispatch(this._actions.registrationFailure(err));
+      this._notificationSvc.error(`Nie udało się zarejestrować: ${err}`);
     }
   };
 

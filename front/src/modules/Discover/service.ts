@@ -25,6 +25,7 @@ export class DiscoverActionsService extends ActionsService {
       dispatch(this._actions.fetchPlacesSuccess(places));
     } catch (err) {
       dispatch(this._actions.fetchPlacesFailure(err));
+      this._notificationSvc.error(`Nie udało się pobrać miejsc: ${err}`);
     }
   };
 
@@ -42,7 +43,7 @@ export class DiscoverActionsService extends ActionsService {
       navigate("/");
     } catch (err) {
       dispatch(this._actions.createPlaceFailure(err));
-      this._notificationSvc.error("Nie udało się dodać miejsca");
+      this._notificationSvc.error(`Nie udało się dodać miejsca: ${err}`);
     }
   };
 
@@ -55,7 +56,7 @@ export class DiscoverActionsService extends ActionsService {
       this._notificationSvc.success("Pomyślnie usunięto miejsce");
     } catch (err) {
       dispatch(this._actions.removePlaceFailure(err));
-      this._notificationSvc.error("Nie udało się usunąć miejsca");
+      this._notificationSvc.error(`Nie udało się usunąć miejsca: ${err}`);
     }
   }
 
@@ -68,7 +69,7 @@ export class DiscoverActionsService extends ActionsService {
       this._notificationSvc.success("Pomyślnie zedytowano miejsce");
     } catch (err) {
       dispatch(this._actions.editPlaceFailure(err));
-      this._notificationSvc.error("Nie udało się zedytować miejsca");
+      this._notificationSvc.error(`Nie udało się zedytować miejsca: ${err}`);
     }
   };
 }

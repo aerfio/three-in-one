@@ -9,19 +9,19 @@ export class HttpClient extends Service {
   }
   
   async get<T = any, R = AxiosResponse<T>>(url: string, params?: AxiosRequestConfig) {
-    return axios.get<T, R>(`${this._apiBasePath}/${url}`, params);
+    return axios.get<T, R>(`${this._apiBasePath}${url}`, params);
   };
 
   async post<T = any, R = AxiosResponse<T>>(url: string, body: any, params?: AxiosRequestConfig) {
-    return axios.post<T, R>(`${this._apiBasePath}/${url}`, body, params);
+    return axios.post<T, R>(`${this._apiBasePath}${url}`, body, params);
   };
 
   async put<T = any, R = AxiosResponse<T>>(url: string, body: any, params?: AxiosRequestConfig) {
-    return axios.put<T, R>(url, body, params);
+    return axios.put<T, R>(`${this._apiBasePath}${url}`, body, params);
   };
 
   async delete<T = any, R = AxiosResponse<T>>(url: string, params?: AxiosRequestConfig) {
-    return axios.delete<T, R>(url, params);
+    return axios.delete<T, R>(`${this._apiBasePath}${url}`, params);
   };
 }
 

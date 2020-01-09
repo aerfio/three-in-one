@@ -69,7 +69,7 @@ const initReducer = () => {
       case types.REMOVE_PLACE_SUCCESS:
         return {
           ...state,
-          places: state.places.filter(u => u !== payload.id),
+          places: state.places.filter(u => u.id != payload),
         }
       case types.REMOVE_PLACE_FAILURE:
         return {
